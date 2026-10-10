@@ -1,1 +1,583 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#126b45">
+  <title>COLNET Gist | Campus Connect</title>
+  <style>
+    :root {
+      --green: #126b45;
+      --light: #eaf6ef;
+      --white: #fff;
+      --text: #18352a;
+      --muted: #65756c;
+      --border: #dce9e0;
+      --bg: #f4f8f5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: var(--green);
+      color: white;
+      padding: 20px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .header-inner, main {
+      max-width: 720px;
+      margin: auto;
+    }
+    .brand { font-size: 25px; font-weight: 800; }
+    .tagline { font-size: 13px; margin-top: 4px; opacity: .9; }
+    main { padding: 18px 12px 50px; }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 17px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 12px #173d2910;
+    }
+    h2 { font-size: 19px; margin: 0 0 13px; }
+    h3 { font-size: 16px; margin: 0 0 8px; }
+    p { overflow-wrap: anywhere; }
+    input, textarea, button {
+      font: inherit;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbdacf;
+      border-radius: 10px;
+      margin: 6px 0 12px;
+      background: white;
+      color: var(--text);
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 15px;
+      background: var(--green);
+      color: white;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .55; }
+    .secondary { background: var(--light); color: var(--green); }
+    .danger { background: #a52b2b; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .hidden { display: none !important; }
+    .notice {
+      padding: 11px;
+      background: var(--light);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      overflow-wrap: anywhere;
+    }
+    .post { border-bottom: 1px solid var(--border); padding: 15px 0; }
+    .post:first-child { padding-top: 0; }
+    .post:last-child { border-bottom: 0; }
+    .post p { white-space: pre-wrap; line-height: 1.5; }
+    .post-head { display: flex; justify-content: space-between; gap: 8px; }
+    .comments {
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 10px;
+    }
+    .comment {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      overflow-wrap: anywhere;
+    }
+    .comment-form { display: flex; gap: 7px; align-items: center; }
+    .comment-form input { margin: 8px 0 0; min-width: 0; }
+    .comment-form button { margin-top: 8px; }
+    footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">🌿 COLNET Gist</div>
+    <div class="tagline">Your campus. Your people. Your gist.</div>
+  </div>
+</header>
+
+<main>
+  <div id="notice" class="notice hidden" role="status"></div>
+
+  <section id="authPanel" class="card">
+    <h2>Welcome to COLNET Gist</h2>
+    <p class="muted">Connect with your campus community.</p>
+    <form id="authForm">
+      <label for="displayName">Your display name (for registration)</label>
+      <input id="displayName" maxlength="40"
+        placeholder="e.g. Tobi Ade" autocomplete="name">
+
+      <label for="email">Email address</label>
+      <input id="email" type="email" required
+        placeholder="you@example.com" autocomplete="email">
+
+      <label for="password">Password (at least 6 characters)</label>
+      <input id="password" type="password" required minlength="6"
+        placeholder="Enter password" autocomplete="current-password">
+
+      <div class="actions">
+        <button type="button" id="signupBtn">Create account</button>
+        <button type="submit" id="loginBtn" class="secondary">
+          Log in
+        </button>
+      </div>
+    </form>
+    <p class="muted">Use an email you control. Student identity is not
+      verified in this first version.</p>
+  </section>
+
+  <section id="appPanel" class="hidden">
+    <div class="card">
+      <h2>Welcome, <span id="welcomeName">student</span> 👋</h2>
+      <p class="muted">Share campus updates, stories and positive vibes.</p>
+      <div class="actions">
+        <button id="logoutBtn" class="secondary">Log out</button>
+      </div>
+    </div>
+
+    <section class="card">
+      <h2>What's happening on campus?</h2>
+      <form id="postForm">
+        <textarea id="postText" maxlength="1000" required
+          placeholder="Share a campus gist..."></textarea>
+        <div class="actions">
+          <button id="postBtn" type="submit">Publish post</button>
+        </div>
+      </form>
+      <p class="muted">Text posts only for now. Please respect other students'
+        privacy and avoid sharing personal information without permission.</p>
+    </section>
+
+    <section class="card">
+      <h2>Campus feed</h2>
+      <div id="feed"><p class="muted">Loading posts...</p></div>
+    </section>
+
+    <section id="adminPanel" class="card hidden">
+      <h2>🛡️ Admin dashboard</h2>
+      <p class="muted">Recent posts available for moderation.</p>
+      <p id="adminStats" class="notice"></p>
+      <div id="adminFeed"></div>
+    </section>
+  </section>
+</main>
+
+<footer>COLNET Gist · Connect kindly. Share responsibly.</footer>
+
+<script type="module">
+  import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
+    signInWithEmailAndPassword, signOut, updateProfile
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import {
+    getFirestore, collection, doc, setDoc, getDoc, addDoc,
+    deleteDoc, onSnapshot, query, orderBy, limit, serverTimestamp,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  // Replace every placeholder below with the exact value
+  // shown in Firebase Console > Project settings > Your apps > Config.
+  const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "colnet-2.firebaseapp.com",
+  projectId: "colnet-2",
+  storageBucket: "PASTE_YOUR_EXACT_STORAGE_BUCKET",
+  messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID",
+  appId: "PASTE_YOUR_EXACT_APP_ID"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const $ = id => document.getElementById(id);
+  let currentUser = null;
+  let isAdmin = false;
+  let posts = [];
+  let unsubscribePosts = null;
+  let feedVersion = 0;
+  const likeCounts = {};
+  const likedByMe = new Set();
+  const openedComments = new Set();
+
+  function message(text) {
+    $("notice").textContent = text;
+    $("notice").classList.remove("hidden");
+  }
+
+  function clearMessage() {
+    $("notice").textContent = "";
+    $("notice").classList.add("hidden");
+  }
+
+  function escapeHTML(value = "") {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  function postDate(timestamp) {
+    if (!timestamp || !timestamp.toDate) return "Just now";
+    return timestamp.toDate().toLocaleString();
+  }
+
+  async function checkAdmin(user) {
+    try {
+      const snap = await getDoc(doc(db, "admins", user.uid));
+      return snap.exists() && snap.data().role === "admin";
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  $("signupBtn").addEventListener("click", async () => {
+    clearMessage();
+    const name = $("displayName").value.trim();
+    const email = $("email").value.trim();
+    const password = $("password").value;
+
+    if (!name) {
+      message("Enter your display name before creating an account.");
+      return;
+    }
+    if (name.length > 40) {
+      message("Your display name must be 40 characters or fewer.");
+      return;
+    }
+
+    $("signupBtn").disabled = true;
+    try {
+      const result = await createUserWithEmailAndPassword(
+        auth, email, password
+      );
+      await updateProfile(result.user, { displayName: name });
+      await setDoc(doc(db, "profiles", result.user.uid), {
+        displayName: name,
+        email: result.user.email,
+        createdAt: serverTimestamp()
+      });
+      message("Account created successfully. Welcome to COLNET Gist!");
+    } catch (error) {
+      message("Could not create account: " + error.message);
+    } finally {
+      $("signupBtn").disabled = false;
+    }
+  });
+
+  $("authForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    clearMessage();
+    try {
+      await signInWithEmailAndPassword(
+        auth, $("email").value.trim(), $("password").value
+      );
+      message("You are logged in.");
+    } catch (error) {
+      message("Could not log in: " + error.message);
+    }
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    try {
+      await signOut(auth);
+      message("You have logged out.");
+    } catch (error) {
+      message("Could not log out: " + error.message);
+    }
+  });
+
+  $("postForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!currentUser) return;
+
+    const text = $("postText").value.trim();
+    if (!text) {
+      message("Write something before publishing.");
+      return;
+    }
+    if (text.length > 1000) {
+      message("Posts must be 1,000 characters or fewer.");
+      return;
+    }
+
+    $("postBtn").disabled = true;
+    try {
+      await addDoc(collection(db, "posts"), {
+        authorId: currentUser.uid,
+        authorName: currentUser.displayName || "Student",
+        text,
+        createdAt: serverTimestamp()
+      });
+      $("postText").value = "";
+      message("Your post has been published!");
+    } catch (error) {
+      message("Could not publish post: " + error.message);
+    } finally {
+      $("postBtn").disabled = false;
+    }
+  });
+
+  function postMarkup(post) {
+    const mine = currentUser && post.authorId === currentUser.uid;
+    const liked = likedByMe.has(post.id);
+    return `
+      <article class="post">
+        <div class="post-head">
+          <div>
+            <strong>${escapeHTML(post.authorName || "Student")}</strong>
+            <div class="muted">${escapeHTML(postDate(post.createdAt))}</div>
+          </div>
+          ${isAdmin || mine ? `
+            <button class="danger" data-delete="${escapeHTML(post.id)}">
+              Delete
+            </button>` : ""}
+        </div>
+        <p>${escapeHTML(post.text || "")}</p>
+        <div class="actions">
+          <button class="secondary" data-like="${escapeHTML(post.id)}">
+            ${liked ? "♥ Liked" : "♡ Like"} (${likeCounts[post.id] || 0})
+          </button>
+          <button class="secondary" data-comments="${escapeHTML(post.id)}">
+            ${openedComments.has(post.id) ? "Hide comments" : "Comments"}
+          </button>
+        </div>
+        <div class="comments ${openedComments.has(post.id) ? "" : "hidden"}"
+          id="comments-${escapeHTML(post.id)}">
+          <div class="comment-list" id="comment-list-${escapeHTML(post.id)}">
+            <p class="muted">Open comments to load them.</p>
+          </div>
+          <form class="comment-form" data-comment-form="${escapeHTML(post.id)}">
+            <input name="commentText" maxlength="500" required
+              placeholder="Write a comment..." aria-label="Write a comment">
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </article>`;
+  }
+
+  function renderFeed() {
+    if (!posts.length) {
+      $("feed").innerHTML =
+        '<p class="muted">No posts yet. Be the first to share a campus gist!</p>';
+    } else {
+      $("feed").innerHTML = posts.map(postMarkup).join("");
+    }
+
+    if (isAdmin) {
+      $("adminPanel").classList.remove("hidden");
+      $("adminStats").textContent =
+        "Showing " + posts.length + " recent posts.";
+      $("adminFeed").innerHTML = posts.length
+        ? posts.map(post => `
+          <div class="post">
+            <strong>${escapeHTML(post.authorName || "Student")}</strong>
+            <p>${escapeHTML((post.text || "").slice(0, 180))}</p>
+            <button class="danger" data-delete="${escapeHTML(post.id)}">
+              Remove post
+            </button>
+          </div>`).join("")
+        : '<p class="muted">No posts to moderate.</p>';
+    } else {
+      $("adminPanel").classList.add("hidden");
+      $("adminFeed").innerHTML = "";
+    }
+  }
+
+  async function refreshLikes(postId) {
+    try {
+      const snap = await getDocs(collection(db, "posts", postId, "likes"));
+      likeCounts[postId] = snap.size;
+      if (currentUser && snap.docs.some(d => d.id === currentUser.uid)) {
+        likedByMe.add(postId);
+      } else {
+        likedByMe.delete(postId);
+      }
+    } catch (error) {
+      console.error("Could not load likes", error);
+    }
+  }
+
+  async function loadComments(postId) {
+    const target = $("comment-list-" + postId);
+    if (!target) return;
+    target.innerHTML = '<p class="muted">Loading comments...</p>';
+
+    try {
+      const q = query(
+        collection(db, "posts", postId, "comments"),
+        orderBy("createdAt", "asc"), limit(50)
+      );
+      const snap = await getDocs(q);
+      const targetAgain = $("comment-list-" + postId);
+      if (!targetAgain) return;
+
+      targetAgain.innerHTML = snap.empty
+        ? '<p class="muted">No comments yet. Start the conversation.</p>'
+        : snap.docs.map(item => {
+          const c = item.data();
+          return `<div class="comment">
+            <strong>${escapeHTML(c.authorName || "Student")}</strong>
+            <div>${escapeHTML(c.text || "")}</div>
+          </div>`;
+        }).join("");
+    } catch (error) {
+      target.innerHTML =
+        '<p class="muted">Could not load comments. Check Firestore rules.</p>';
+      console.error(error);
+    }
+  }
+
+  async function deletePost(postId) {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
+    if (!confirm("Delete this post? This cannot be undone.")) return;
+
+    try {
+      await deleteDoc(doc(db, "posts", postId));
+      message("Post deleted.");
+    } catch (error) {
+      message("Could not delete post: " + error.message);
+    }
+  }
+
+  $("feed").addEventListener("click", async event => {
+    const likeButton = event.target.closest("[data-like]");
+    const commentsButton = event.target.closest("[data-comments]");
+    const deleteButton = event.target.closest("[data-delete]");
+
+    if (likeButton) {
+      const id = likeButton.dataset.like;
+      try {
+        const likeRef = doc(db, "posts", id, "likes", currentUser.uid);
+        const existing = await getDoc(likeRef);
+        if (existing.exists()) {
+          await deleteDoc(likeRef);
+        } else {
+          await setDoc(likeRef, {
+            userId: currentUser.uid,
+            createdAt: serverTimestamp()
+          });
+        }
+        await refreshLikes(id);
+        renderFeed();
+        if (openedComments.has(id)) await loadComments(id);
+      } catch (error) {
+        message("Could not update like: " + error.message);
+      }
+    }
+
+    if (commentsButton) {
+      const id = commentsButton.dataset.comments;
+      if (openedComments.has(id)) {
+        openedComments.delete(id);
+      } else {
+        openedComments.add(id);
+      }
+      renderFeed();
+      if (openedComments.has(id)) await loadComments(id);
+    }
+
+    if (deleteButton) await deletePost(deleteButton.dataset.delete);
+  });
+
+  $("adminFeed").addEventListener("click", async event => {
+    const button = event.target.closest("[data-delete]");
+    if (button) await deletePost(button.dataset.delete);
+  });
+
+  $("feed").addEventListener("submit", async event => {
+    const form = event.target.closest("form[data-comment-form]");
+    if (!form) return;
+    event.preventDefault();
+
+    const postId = form.dataset.commentForm;
+    const input = form.elements.commentText;
+    const text = input.value.trim();
+    if (!text) return;
+
+    try {
+      await addDoc(collection(db, "posts", postId, "comments"), {
+        authorId: currentUser.uid,
+        authorName: currentUser.displayName || "Student",
+        text,
+        createdAt: serverTimestamp()
+      });
+      input.value = "";
+      await loadComments(postId);
+      message("Comment added.");
+    } catch (error) {
+      message("Could not add comment: " + error.message);
+    }
+  });
+
+  onAuthStateChanged(auth, async user => {
+    feedVersion++;
+    const thisVersion = feedVersion;
+    currentUser = user;
+
+    if (unsubscribePosts) {
+      unsubscribePosts();
+      unsubscribePosts = null;
+    }
+
+    $("authPanel").classList.toggle("hidden", !!user);
+    $("appPanel").classList.toggle("hidden", !user);
+
+    if (!user) {
+      isAdmin = false;
+      posts = [];
+      $("feed").innerHTML = "";
+      $("adminPanel").classList.add("hidden");
+      return;
+    }
+
+    $("welcomeName").textContent = user.displayName || "student";
+    isAdmin = await checkAdmin(user);
+    if (thisVersion !== feedVersion) return;
+
+    const q = query(
+      collection(db, "posts"),
+      orderBy("createdAt", "desc"),
+      limit(50)
+    );
+
+    unsubscribePosts = onSnapshot(q, async snapshot => {
+      posts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+      await Promise.all(posts.map(p => refreshLikes(p.id)));
+      if (thisVersion !== feedVersion) return;
+      renderFeed();
+    }, error => {
+      message("Feed error: " + error.message +
+        ". Please check your Firestore rules.");
+      $("feed").innerHTML =
+        '<p class="muted">Posts could not load.</p>';
+    });
+
+    renderFeed();
+  });
+</script>
+</body>
+</html>
